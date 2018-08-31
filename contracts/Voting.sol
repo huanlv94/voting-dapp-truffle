@@ -12,7 +12,7 @@ contract Voting {
 
   mapping(bytes32 => bool) public validCandidates;
 
-  function Voting(bytes32[] _candidateNames, bytes32[] _candidateHashes) public {
+  constructor(bytes32[] _candidateNames, bytes32[] _candidateHashes) public {
     for (uint i = 0; i < _candidateNames.length; i++) {
       validCandidates[_candidateNames[i]] = true;
       candidateHash[_candidateNames[i]] = _candidateHashes[i];

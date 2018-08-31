@@ -13,8 +13,6 @@ import { default as sigUtil} from 'eth-sig-util'
  * file in the build directory. We will use this information
  * to setup a Voting abstraction. We will use this abstraction
  * later to create an instance of the Voting contract.
- * Compare this against the index.js from our previous tutorial to see the difference
- * https://gist.github.com/maheshmurthy/f6e96d6b3fff4cd4fa7f892de8a1a1b4#file-index-js
  */
 
 import voting_artifacts from '../../build/contracts/Voting.json'
@@ -27,17 +25,12 @@ window.submitVote = function(candidate) {
   let candidateName = $("#candidate-name").val()
   let signature = $("#voter-signature").val()
   let voterAddress = $("#voter-address").val()
-
-  console.log(candidateName);
-  console.log(signature);
-  console.log(voterAddress);
   
   $("#msg").html("Vote has been submitted. The vote count will increment as soon as the vote is recorded on the blockchain. Please wait.")
 
   Voting.deployed().then(function(contractInstance) {
     contractInstance.voteForCandidate(candidateName, voterAddress, signature, {gas: 140000, from: web3.eth.accounts[0]}).then(function() {
       let div_id = candidates[candidateName];
-      console.log(div_id);
       return contractInstance.totalVotesFor.call(candidateName).then(function(v) {
         console.log(v.toString())
         $("#" + div_id).html(v.toString())
@@ -48,7 +41,7 @@ window.submitVote = function(candidate) {
 }
 
 window.voteForCandidate = function(candidate) {
-  let candidateName = $("#candidate").val()
+  let candidateName = $('#candidate').val()
 
   let msgParams = [
     {
@@ -63,8 +56,8 @@ window.voteForCandidate = function(candidate) {
   var params = [msgParams, from]
   var method = 'eth_signTypedData'
 
-  console.log("Hash is ");
-  console.log(sigUtil.typedSignatureHash(msgParams));
+  console.info('Hash is ')
+  console.info(sigUtil.typedSignatureHash(msgParams))
 
   web3.currentProvider.sendAsync({
     method,
@@ -75,18 +68,18 @@ window.voteForCandidate = function(candidate) {
     if (result.error) {
       alert(result.error.message)
     }
-    if (result.error) return console.error(result)
-    $("#msg").html("User wants to vote for " + candidateName + ". Any one can now submit the vote to the blockchain on behalf of this user. Use the below values to submit the vote to the blockchain");
-    $("#vote-for").html("Candidate: " + candidateName)
-    $("#addr").html("Address: " + from)
-    $("#signature").html("Signature: " + result.result);
-    console.log('PERSONAL SIGNED:' + JSON.stringify(result.result))
+    if (result.error) return console.error(result);
+    $("#msg").html("<p class='alert alert-info'>User wants to vote for " + candidateName + ". Any one can now submit the vote to the blockchain on behalf of this user. Use the below values to submit the vote to the blockchain</p>");
+    $("#vote-for").html("Candidate: " + candidateName);
+    $("#addr").html("Address: " + from);
+    $("#signature").html("<p>Signature:</p> <input class='i-signature' value=" + result.result + "/>");
+    console.info('PERSONAL SIGNED:' + JSON.stringify(result.result))
   })
 }
 
 $( document ).ready(function() {
   if (typeof web3 !== 'undefined') {
-    console.warn("Using web3 detected from external source like Metamask")
+    console.warn("Using web3 detected from external source like Metamask");
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
   } else {
